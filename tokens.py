@@ -7,34 +7,38 @@ class TokenType(Enum):
     NUM = 'NUM'
     LPAR = 'LPAR'
     RPAR = 'RPAR'
+    NONE = 'NONE'
     
 class Token:
     Variable = 'x'
     
     def __init__(self, s) -> None:
-        self.string = str(s)
-        self.set_type()
-        self.precedence = 0
-        self.assoc = 0
-        self.value = None
-        
-        if self.type == TokenType.OP:
-            self.set_precedence()
-            self.set_association()
-        elif self.type == TokenType.NUM:
-            self.set_value()
+        if s is not None:
+            self.string = str(s)
+            self.type = self.check_type(self.string)
+            self.precedence = 0
+            self.assoc = 0
+            self.value = None
             
-    def set_type(self):
-        if self.is_op():
-            self.type = TokenType.OP
-        elif self.is_func():
-            self.type = TokenType.FUNC
-        elif self.is_num():
-            self.type = TokenType.NUM
-        elif self.string == '(':
-            self.type = TokenType.LPAR
-        elif self.string == ')':
-            self.type = TokenType.RPAR
+            if self.type == TokenType.OP:
+                self.set_precedence()
+                self.set_association()
+            elif self.type == TokenType.NUM:
+                self.set_value()
+            
+    def check_type(self, s):
+        if self.is_op(s):
+            return TokenType.OP
+        elif self.is_func(s):
+            return TokenType.FUNC
+        elif self.is_num(s):
+            return TokenType.NUM
+        elif s == '(':
+            return TokenType.LPAR
+        elif s == ')':
+            return TokenType.RPAR
+        
+        return TokenType.NONE
             
     def set_value(self):
         values = {'pi': np.pi, 'e': np.e, self.Variable: None}
@@ -70,7 +74,7 @@ class Token:
         associativity = {'^': 1, '*': 0, '/': 0, '+': 0, '-': 0}
         self.assoc = associativity[self.string]
         
-    def is_op(self):
+    def is_op(self, s):
         '''Checks if a string is an operator
         
         args: 
@@ -80,11 +84,12 @@ class Token:
         '''
         operators = ['+', '-', '^', '*', '/']
 
-        if self.string in operators:
+        if s in operators:
             return True
         
         return False
-    def is_func(self):
+    
+    def is_func(self, s):
         '''Checks if a string is a function
         
         args:
@@ -97,12 +102,12 @@ class Token:
                 'sinh', 'cosh', 'tanh', 'arcsinh', 'arccosh', 'arctanh',
                 'csch', 'sech', 'coth', 'arccsch', 'arcsech', 'arccoth',
                 'ln', 'log', 'sqrt', 'abs']
-        if self.string in funcs:
+        if s in funcs:
             return True
         
         return False
     
-    def is_num(self):
+    def is_num(self, s):
         '''Checks if a string is an integer
         
         args: 
@@ -112,9 +117,9 @@ class Token:
         '''
         specials = ['pi', 'e', self.Variable]
         try:
-            if self.string in specials:
+            if s in specials:
                 return True
-            float(self.string)
+            float(s)
             return True
         except:
             return False

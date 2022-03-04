@@ -1,5 +1,5 @@
 from enum import Enum
-import math
+import numpy as np
 
 class TokenType(Enum):
     FUNC = 'FUNC'
@@ -9,11 +9,13 @@ class TokenType(Enum):
     RPAR = 'RPAR'
     
 class Token:
+    Variable = 'x'
+    
     def __init__(self, s) -> None:
         self.string = str(s)
         self.set_type()
-        self.precedence = None
-        self.assoc = None
+        self.precedence = 0
+        self.assoc = 0
         self.value = None
         
         if self.type == TokenType.OP:
@@ -35,7 +37,7 @@ class Token:
             self.type = TokenType.RPAR
             
     def set_value(self):
-        values = {'pi': math.pi, 'e': math.e}
+        values = {'pi': np.pi, 'e': np.e, self.Variable: None}
 
         if self.string.isalpha():
             self.value = values[self.string]
@@ -94,7 +96,7 @@ class Token:
                 'csc', 'sec', 'cot', 'arccsc', 'arcsec', 'arccot',
                 'sinh', 'cosh', 'tanh', 'arcsinh', 'arccosh', 'arctanh',
                 'csch', 'sech', 'coth', 'arccsch', 'arcsech', 'arccoth',
-                'ln', 'log', 'sqrt']
+                'ln', 'log', 'sqrt', 'abs']
         if self.string in funcs:
             return True
         
@@ -108,8 +110,9 @@ class Token:
         returns: 
             boolean
         '''
+        specials = ['pi', 'e', self.Variable]
         try:
-            if self.string == 'pi' or self.string == 'e':
+            if self.string in specials:
                 return True
             float(self.string)
             return True

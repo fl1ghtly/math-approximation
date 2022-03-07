@@ -4,6 +4,7 @@ import numpy as np
 class TokenType(Enum):
     FUNC = 'FUNC'
     OP = 'OP'
+    UNARYOP = 'UNARYOP'
     NUM = 'NUM'
     LPAR = 'LPAR'
     RPAR = 'RPAR'

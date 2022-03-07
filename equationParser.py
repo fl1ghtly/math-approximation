@@ -26,6 +26,11 @@ def tokenize(s):
             tkns.append(Token(tkn))
             tkn = char
             char_type = new_type
+        elif new_type == TokenType.OP:
+            if tkn != '':
+                tkns.append(Token(tkn))
+            tkn = char
+            char_type = new_type
         else:
             tkn += char
             
@@ -33,6 +38,18 @@ def tokenize(s):
     
     return tkns
 
+def change_unary_op(tokens):
+    changed = []
+    for i, token in enumerate(tokens):
+        if token.string in ['-', '!']:
+            if i == 0:
+                token.type = TokenType.UNARYOP  
+            elif tokens[i - 1].string in ['(', '*', '/']:
+                token.type = TokenType.UNARYOP
+        changed.append(token)
+            
+    return changed
+            
 def peek(stack):
     '''Peeks the value from the top of the stack
     
@@ -64,6 +81,11 @@ def convert_equation(tokens):
             stack.append(tkn)
         elif tkn.type == TokenType.LPAR:
             stack.append(tkn)
+        elif tkn.type == TokenType.UNARYOP:
+            if tkn.string == '-':
+                stack.append(tkn)
+            elif tkn.string == '!':
+                output.append(tkn)
         elif tkn.type == TokenType.RPAR:
             while stack:
                 op = stack.pop()
@@ -132,18 +154,15 @@ def evaluate(eqn):
             o1 = stack.pop().value
             # Look up the tkn in a dict and eval using associated library
             stack.append(Token(eval_func(tkn.string, o1)))
+        elif tkn.type == TokenType.UNARYOP:
+            num = str(stack.pop().value)
+            op = tkn.string
+            stack.append(Token(eval(op + num)))
     return float(stack.pop().string)
 
 if __name__ == '__main__':
-    eqn = '3*sinh(x)cosh(x)ln(x) + 5(2) - e^x + sin(x)'
-    #v = clean_equation(eqn)
+    eqn = 'sin(-pi)'
     t = tokenize(eqn)
-    #print(clean_equation(eqn))
-    for a in t:
-        print(a.string + ' ', end='')
-    '''
-    for a in t:
-        print(a.string +' ', end='')
+    t = change_unary_op(t)
     rpn = convert_equation(t)
     print(evaluate(rpn))
-    '''

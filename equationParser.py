@@ -26,7 +26,7 @@ def tokenize(s):
             tkns.append(Token(tkn))
             tkn = char
             char_type = new_type
-        elif new_type == TokenType.OP:
+        elif new_type in [TokenType.OP, TokenType.LPAR, TokenType.RPAR]:
             if tkn != '':
                 tkns.append(Token(tkn))
             tkn = char
@@ -35,9 +35,29 @@ def tokenize(s):
             tkn += char
             
     tkns.append(Token(tkn))
-    
     return tkns
 
+def add_implicit_multiplication(tokens):
+    changed = []
+    conditions = [TokenType.FUNC, TokenType.NUM, TokenType.LPAR]
+    initial = [TokenType.RPAR, TokenType.NUM]
+    for i, token in enumerate(tokens):
+        if i >= len(tokens) - 1:
+            changed.append(token)
+            break
+        
+        next_token = tokens[i + 1].type
+        if token.type not in initial:
+            changed.append(token)
+            continue
+        if next_token in conditions:
+            changed.append(token)
+            changed.append(Token('*'))
+        else:
+            changed.append(token)
+        
+    return changed
+    
 def change_unary_op(tokens):
     changed = []
     for i, token in enumerate(tokens):
@@ -161,8 +181,13 @@ def evaluate(eqn):
     return float(stack.pop().string)
 
 if __name__ == '__main__':
-    eqn = 'sin(-pi)'
+    eqn = '3(2)sin(pi/6)'
     t = tokenize(eqn)
     t = change_unary_op(t)
+    t = add_implicit_multiplication(t)
+    for a in t:
+        print(a.string + ' ', end='')
     rpn = convert_equation(t)
     print(evaluate(rpn))
+    '''
+    '''

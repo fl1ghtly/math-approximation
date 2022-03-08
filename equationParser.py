@@ -39,8 +39,8 @@ def tokenize(s):
 
 def add_implicit_multiplication(tokens):
     changed = []
-    conditions = [TokenType.FUNC, TokenType.NUM, TokenType.LPAR]
-    initial = [TokenType.RPAR, TokenType.NUM]
+    conditions = [TokenType.FUNC, TokenType.NUM, TokenType.LPAR, TokenType.SYMBOL]
+    initial = [TokenType.RPAR, TokenType.NUM, TokenType.SYMBOL]
     for i, token in enumerate(tokens):
         if i >= len(tokens) - 1:
             changed.append(token)
@@ -95,7 +95,7 @@ def convert_equation(tokens):
     
     # Algorithm from https://www.chris-j.co.uk/parsing.php
     for tkn in tokens:
-        if tkn.type == TokenType.NUM:
+        if tkn.type == TokenType.NUM or tkn.type == TokenType.SYMBOL:
             output.append(tkn)
         elif tkn.type == TokenType.FUNC:
             stack.append(tkn)
@@ -163,7 +163,7 @@ def evaluate(eqn):
     '''
     stack = deque()
     for tkn in eqn:
-        if tkn.type == TokenType.NUM:
+        if tkn.type == TokenType.NUM or tkn.type == TokenType.SYMBOL:
             stack.append(tkn)
         elif tkn.type == TokenType.OP:
             o1 = str(stack.pop().value)
@@ -181,13 +181,9 @@ def evaluate(eqn):
     return float(stack.pop().string)
 
 if __name__ == '__main__':
-    eqn = '3(2)sin(pi/6)'
+    eqn = '-xsin(x)'
     t = tokenize(eqn)
     t = change_unary_op(t)
     t = add_implicit_multiplication(t)
-    for a in t:
-        print(a.string + ' ', end='')
     rpn = convert_equation(t)
     print(evaluate(rpn))
-    '''
-    '''

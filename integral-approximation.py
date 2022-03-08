@@ -24,8 +24,10 @@ def main():
     left = float(input('Input left endpoint: '))
     right = float(input('Input right endpoint: '))
     Token.Variable = 'x'
-    tokens = ep.tokenize(equation)
-    rpn = ep.convert_equation(tokens)
+    t = ep.tokenize(equation)
+    t = ep.change_unary_op(t)
+    t = ep.add_implicit_multiplication(t)
+    rpn = ep.convert_equation(t)
     print(integrate_monte_carlo(rpn, 10000, left, right))
 
 if __name__ == '__main__':

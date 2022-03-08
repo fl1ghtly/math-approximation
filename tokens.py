@@ -9,6 +9,7 @@ class TokenType(Enum):
     LPAR = 'LPAR'
     RPAR = 'RPAR'
     NONE = 'NONE'
+    SYMBOL = 'SYMBOl'
     
 class Token:
     Variable = 'x'
@@ -34,6 +35,8 @@ class Token:
             return TokenType.FUNC
         elif self.is_num(s):
             return TokenType.NUM
+        elif s == self.Variable:
+            return TokenType.SYMBOL
         elif s == '(':
             return TokenType.LPAR
         elif s == ')':
@@ -116,7 +119,7 @@ class Token:
         returns: 
             boolean
         '''
-        specials = ['pi', 'e', self.Variable]
+        specials = ['pi', 'e']
         try:
             if s in specials:
                 return True

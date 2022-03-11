@@ -181,7 +181,11 @@ def evaluate(eqn):
     return float(stack.pop().string)
 
 if __name__ == '__main__':
+<<<<<<< HEAD
     eqn = '5+-3'
+=======
+    eqn = '4^(0.5)'
+>>>>>>> c36caa2501095ac6b1e78b7ea572aaa70b929925
     t = tokenize(eqn)
     t = change_unary_op(t)
     t = add_implicit_multiplication(t)

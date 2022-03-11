@@ -64,7 +64,7 @@ def change_unary_op(tokens):
         if token.string in ['-', '!']:
             if i == 0:
                 token.type = TokenType.UNARYOP  
-            elif tokens[i - 1].string in ['(', '*', '/']:
+            elif tokens[i - 1].string in ['(', '*', '/', '-', '+']:
                 token.type = TokenType.UNARYOP
         changed.append(token)
             
@@ -181,7 +181,7 @@ def evaluate(eqn):
     return float(stack.pop().string)
 
 if __name__ == '__main__':
-    eqn = '-xsin(x)'
+    eqn = '5+-3'
     t = tokenize(eqn)
     t = change_unary_op(t)
     t = add_implicit_multiplication(t)

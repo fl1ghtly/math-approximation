@@ -119,7 +119,7 @@ class Token:
         returns: 
             boolean
         '''
-        specials = ['pi', 'e']
+        specials = ['pi', 'e', '.']
         try:
             if s in specials:
                 return True

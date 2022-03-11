@@ -181,7 +181,7 @@ def evaluate(eqn):
     return float(stack.pop().string)
 
 if __name__ == '__main__':
-    eqn = '-xsin(x)'
+    eqn = '4^(0.5)'
     t = tokenize(eqn)
     t = change_unary_op(t)
     t = add_implicit_multiplication(t)

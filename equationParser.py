@@ -174,7 +174,69 @@ def find_continuity(rpn, a, b):
         if np.abs(dy) > 0.001:
             return False
     return True
-            
+
+def is_func_continuous(tokens):
+  '''Returns whether a function is potentially continuous or not
+
+  args:
+    tokens (list) list of token objects
+  returns:
+    boolean
+  '''
+  discont = ['tan', 'cot', 'ln', 'sqrt', 'log', 'arcsec', 'arccsc']
+  idx = 1
+  for i, func in enumerate(tokens):
+    if func.type == TokenType.FUNC:
+      if func.string in discont:
+        return False
+      else:
+        return True
+    elif func.string == "^":
+      num = True
+      if tokens[i-1].type == TokenType.NUM:
+        num = True
+      elif tokens[i-1].type in [TokenType.FUNC, TokenType.SYMBOL]:
+        num = False
+      # number ^ number Flag True
+      # number ^ variable or function: Flag False 
+      # variable or function ^ number that is < 1 not equal to 0: Flag False
+      # variable or function ^ variable or function: Flag False
+       # 2^3 + x^2 stop after operator
+        # 2^(3 + x^(2) ) + x^2stop after finding closing bracket
+      left = 0
+      right = 0
+      left_ind=0
+      right_ind = 0
+      ctr = 0
+      while left != right:
+        if tokens[i+ctr].type == TokenType.LPAR:
+          left += 1
+        elif tokens[i+ctr].type == TokenType.RPAR:
+          right += 1
+        if left == 1:
+          left_ind = i + ctr
+        if right == left:
+          right_ind == i + ctr
+          break
+
+        
+      if not num:
+        return False
+      for smt in range(left_ind, right_ind +1):
+        if tokens[smt].type in [TokenType.FUNC, TokenType.SYMBOL]:
+          return False
+      return True
+      
+        
+    if func.string == '/':
+      # Loops through all tokens that are after the division symbol
+      # If a token is a symbol or function, then it is flagged as 
+      # potentially discontinuous
+      while tokens[i + idx].type not in [TokenType.FUNC, TokenType.SYMBOL]:
+        idx += 1
+        if i + idx > len(tokens) - 1:
+          return True
+      return False
         
 def evaluate(eqn):
     '''Evaluates an RPN equation

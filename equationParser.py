@@ -153,6 +153,29 @@ def eval_func(func, val):
     f = funcs[func]
     return f(val)
 
+def find_continuity(rpn, a, b):
+    linear = np.linspace(a, b, 10000)
+    dx = 0.00001
+    indexes = []
+    for i, token in enumerate(rpn):
+        if token.string == Token.Variable:
+            indexes.append(i)
+            
+    for i, num in enumerate(linear):
+        for index in indexes:
+            rpn[index].value = num
+        y1 = evaluate(rpn)
+        for index in indexes:
+            rpn[index].value = num + dx
+        y2 = evaluate(rpn)
+        
+        dy = y2 - y1
+        
+        if np.abs(dy) > 0.001:
+            return False
+    return True
+            
+        
 def evaluate(eqn):
     '''Evaluates an RPN equation
     
